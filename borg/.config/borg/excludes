@@ -1,0 +1,37 @@
+# folders that don't need backup. saves gigabytes.
+
+# caches
+/home/*/.cache
+/home/*/.local/share/Trash
+/home/*/.thumbnails
+/home/*/.mozilla/firefox/*/Cache*
+/home/*/.config/Code*/Cache*
+
+# package managers
+**/node_modules
+**/.venv
+**/venv
+**/__pycache__
+**/.tox
+**/target/debug
+**/target/release
+
+# build artifacts
+**/dist
+**/build
+**/.next
+**/.nuxt
+
+# games
+/home/*/games
+/home/*/.steam
+/home/*/.local/share/Steam
+
+# temporary
+**/*.tmp
+**/*.swp
+**/.DS_Store
+
+# big logs
+/var/log
+/var/cache
