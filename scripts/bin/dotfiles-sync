@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# commit + push the dotfiles if anything changed.
+# I run this by hand when I remember.
+
+set -euo pipefail
+cd "$HOME/.dotfiles"
+
+if [ -n "$(git status --porcelain)" ]; then
+    git add -A
+    git commit -m "sync $(date +%Y-%m-%d)"
+    git push
+    echo "dotfiles synced."
+else
+    echo "nothing to do."
+fi

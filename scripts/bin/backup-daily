@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# daily borg backup. local + remote (Hetzner Storage Box).
+# crontab: 0 4 * * *  /home/felipe/bin/backup-daily
+# test restore every six months. write it down in the journal.
+
+set -euo pipefail
+
+export BORG_PASSCOMMAND="cat ${HOME}/.borg/passphrase"
+LOCAL_REPO="/mnt/backup/borg-laptop"
+REMOTE_REPO="ssh://uXXXXXX@uXXXXXX.your-storagebox.de:23/./borg-laptop"
+
+HOSTNAME=$(hostname -s)
+TIMESTAMP=$(date +%Y-%m-%d_%H:%M)
+
+INCLUDES=(
+    "${HOME}/notes"
+    "${HOME}/Documents"
+    "${HOME}/Pictures"
+    "${HOME}/.dotfiles"
+    "${HOME}/.gnupg"
+    "${HOME}/.ssh"
+    "${HOME}/projects"
+    "/etc"
+)
+
+EXCLUDE_FILE="${HOME}/.config/borg/excludes"
+
+# ── local ──────────────────────────────────────────────
+echo "[$(date '+%F %T')] local backup"
+borg create --stats --compression zstd,6 \
+    --exclude-from "$EXCLUDE_FILE" \
+    "${LOCAL_REPO}::${HOSTNAME}-${TIMESTAMP}" \
+    "${INCLUDES[@]}"
+
+borg prune --keep-daily 14 --keep-weekly 8 --keep-monthly 12 "$LOCAL_REPO"
+borg compact "$LOCAL_REPO"
+
+# ── remote ─────────────────────────────────────────────
+echo "[$(date '+%F %T')] remote backup"
+borg create --stats --compression zstd,6 \
+    --exclude-from "$EXCLUDE_FILE" \
+    "${REMOTE_REPO}::${HOSTNAME}-${TIMESTAMP}" \
+    "${INCLUDES[@]}"
+
+borg prune --keep-daily 7 --keep-weekly 4 --keep-monthly 6 "$REMOTE_REPO"
+
+echo "[$(date '+%F %T')] ok"
+notify-send "backup ok" "done at $(date +%H:%M)" 2>/dev/null || true

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# apply Cinnamon settings from dconf-settings.ini
+# usage: cinnamon-apply
+
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+INI="${DOTFILES}/cinnamon/dconf-settings.ini"
+
+if [ ! -f "$INI" ]; then
+    echo "couldn't find $INI"
+    exit 1
+fi
+
+if ! command -v dconf >/dev/null; then
+    echo "dconf not installed. sudo apt install dconf-cli"
+    exit 1
+fi
+
+# backup first (always)
+BACKUP="${HOME}/.cache/cinnamon-dconf-backup-$(date +%Y%m%d-%H%M%S).ini"
+mkdir -p "$(dirname "$BACKUP")"
+dconf dump / > "$BACKUP"
+echo "backup saved to: $BACKUP"
+
+# apply
+dconf load / < "$INI"
+echo "settings applied. log out / log in to pick everything up."

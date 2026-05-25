@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# open today's journal. create from template if missing.
+
+set -euo pipefail
+
+DAY=$(date +%Y-%m-%d)
+DIR="$HOME/notes/journal"
+FILE="${DIR}/${DAY}.md"
+
+mkdir -p "$DIR"
+
+if [ ! -f "$FILE" ]; then
+    cat > "$FILE" <<EOF
+# ${DAY}
+
+## work
+
+## personal
+
+## gratitude
+
+EOF
+fi
+
+exec "${EDITOR:-nvim}" "$FILE"

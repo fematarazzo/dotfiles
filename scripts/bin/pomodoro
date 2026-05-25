@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# plain pomodoro. no app, no distraction.
+# usage: pomodoro 25
+
+set -euo pipefail
+
+MINUTES=${1:-25}
+echo "pomodoro of ${MINUTES}min started at $(date +%H:%M)."
+sleep $((MINUTES * 60))
+notify-send "pomodoro" "done. stand up, water, stretch." -u critical 2>/dev/null || true
+paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || true
+echo "done: $(date +%H:%M)"
