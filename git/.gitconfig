@@ -1,0 +1,51 @@
+[user]
+    name = Felipe Matarazzo
+    email = felipemps@protonmail.com
+
+[commit]
+    verbose = true
+
+[init]
+    defaultBranch = main
+
+[pull]
+    ff = only
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+
+[rebase]
+    autoStash = true
+
+[merge]
+    conflictstyle = zdiff3
+
+[diff]
+    algorithm = histogram
+    colorMoved = default
+
+[core]
+    editor = nvim
+    pager = less -FRX
+    excludesfile = ~/.gitignore_global
+    autocrlf = input
+
+[color]
+    ui = auto
+
+[help]
+    autocorrect = prompt
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    df = diff
+    lg = log --oneline --graph --decorate --all -30
+    undo = reset HEAD~1 --mixed
+    cleanup = "!git branch --merged main | grep -v 'main\\|master\\|\\*' | xargs -n 1 -p git branch -d"

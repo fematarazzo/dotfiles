@@ -1,0 +1,38 @@
+# editors
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# languages
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+.venv/
+venv/
+.env
+.env.local
+
+# build
+dist/
+build/
+target/
+*.o
+*.so
+
+# logs
+*.log
+
+# direnv local
+.envrc.local
+
+# coverage
+coverage/
+.coverage
+htmlcov/
