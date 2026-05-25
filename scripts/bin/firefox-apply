@@ -12,10 +12,16 @@ if [ ! -f "$USERJS" ]; then
     exit 1
 fi
 
-# find Firefox dir (covers regular install and ESR)
-for candidate in "$HOME/.mozilla/firefox" "$HOME/snap/firefox/common/.mozilla/firefox"; do
-    if [ -d "$candidate" ]; then
+# find Firefox dir (covers regular, ESR, Snap, Flatpak)
+for candidate in \
+    "$HOME/.mozilla/firefox" \
+    "$HOME/snap/firefox/common/.mozilla/firefox" \
+    "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox" \
+    "$HOME/.var/app/org.mozilla.Firefox/.mozilla/firefox"
+do
+    if [ -d "$candidate" ] && [ -f "$candidate/profiles.ini" ]; then
         FF_DIR="$candidate"
+        echo "found Firefox dir: $FF_DIR"
         break
     fi
 done
@@ -75,4 +81,8 @@ fi
 # symlink so future updates take effect on next Firefox restart
 ln -sfn "$USERJS" "$TARGET"
 echo "linked: $TARGET -> $USERJS"
-echo "restart Firefox to apply."
+echo
+echo "now:"
+echo "  1) fully quit Firefox (close every window)"
+echo "  2) open Firefox again"
+echo "  3) verify in about:config that toolkit.telemetry.enabled is false"
