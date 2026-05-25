@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# bootstrap — set up dotfiles safely on a new machine.
+# moves any conflicting existing files into ~/dotfiles-backup/<timestamp>/
+# before running stow.
+
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="${HOME}/dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+
+if ! command -v stow >/dev/null; then
+    echo "stow not installed. install with: sudo apt install stow"
+    exit 1
+fi
+
+cd "$DOTFILES"
+
+# collect stow packages (top-level dirs)
+packages=()
+for d in */; do
+    packages+=("${d%/}")
+done
+
+# back up any real files (not symlinks) that would conflict
+moved=0
+for pkg in "${packages[@]}"; do
+    while IFS= read -r -d '' file; do
+        rel="${file#./${pkg}/}"
+        target="${HOME}/${rel}"
+        if [ -e "$target" ] && [ ! -L "$target" ] && [ ! -d "$target" ]; then
+            mkdir -p "$(dirname "${BACKUP_DIR}/${rel}")"
+            mv "$target" "${BACKUP_DIR}/${rel}"
+            echo "  backed up: ~/${rel}"
+            moved=1
+        fi
+    done < <(find "./${pkg}" -type f -print0)
+done
+
+# stow every package
+for pkg in "${packages[@]}"; do
+    stow -v "$pkg"
+done
+
+echo
+echo "done."
+if [ "$moved" -eq 1 ]; then
+    echo "originals saved to: ${BACKUP_DIR}"
+fi

@@ -16,10 +16,18 @@ runs anywhere with a Unix shell.
 ```sh
 sudo apt install stow
 git clone https://github.com/fematarazzo/dotfiles ~/.dotfiles
-cd ~/.dotfiles && stow */
+cd ~/.dotfiles && ./bootstrap
 ```
 
-`stow` symlinks each folder into `~`. Tidy, no hand-rolled symlinks.
+`bootstrap` moves any existing dotfiles out of the way (into
+`~/dotfiles-backup/<timestamp>/`) and then runs `stow` for every package.
+Safe on a fresh machine or one that already has its own configs.
+
+If you want to skip the safety net (you already know nothing conflicts):
+
+```sh
+cd ~/.dotfiles && stow */
+```
 
 ## what's in here
 
