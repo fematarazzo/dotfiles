@@ -1,0 +1,16 @@
+# nano — for when only nano is around (stripped-down server, recovery)
+
+set autoindent
+set tabsize 4
+set tabstospaces
+set linenumbers
+set mouse
+set smarthome
+set softwrap
+set constantshow                   # always show line/col
+set historylog
+set positionlog
+set wordbounds
+
+# syntax highlighting (ships with nano)
+include "/usr/share/nano/*.nanorc"
