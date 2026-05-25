@@ -1,0 +1,92 @@
+# searxng — self-hosted instance on the homelab
+# /etc/searxng/settings.yml
+
+use_default_settings: true
+
+general:
+  instance_name: "home search"
+  contact_url: false
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: ""              # no keystroke leak
+  default_lang: "en-US"
+  formats:
+    - html
+    - json
+
+server:
+  port: 8888
+  bind_address: "127.0.0.1"     # only behind local nginx
+  secret_key: "CHANGE_BEFORE_USE"
+  limiter: true
+  public_instance: false
+  image_proxy: true
+
+ui:
+  static_use_hash: true
+  default_theme: simple
+  theme_args:
+    simple_style: light         # light theme
+  infinite_scroll: false
+  center_alignment: true
+  query_in_title: true
+
+outgoing:
+  request_timeout: 6.0
+  max_request_timeout: 10.0
+  pool_connections: 100
+  pool_maxsize: 20
+  enable_http2: true
+
+engines:
+  - name: mojeek
+    disabled: false
+    weight: 2                   # heavier weight, supporting the small ones
+
+  - name: brave
+    disabled: false
+
+  - name: duckduckgo
+    disabled: false
+
+  - name: wikipedia
+    disabled: false
+
+  - name: marginalia
+    engine: xpath
+    disabled: false
+    shortcut: mg
+
+  - name: google
+    disabled: true              # no thanks
+
+  - name: bing
+    disabled: true
+
+  - name: yandex
+    disabled: true
+
+  - name: github
+    disabled: false
+    shortcut: gh
+
+  - name: stackoverflow
+    disabled: false
+    shortcut: so
+
+  - name: arch linux wiki
+    disabled: false
+    shortcut: aw
+
+  - name: debian
+    engine: xpath
+    disabled: false
+    shortcut: deb
+
+doi_resolvers:
+  oadoi.org: 'https://oadoi.org/'
+  sci-hub.se: 'https://sci-hub.se/'
+
+default_doi_resolver: 'oadoi.org'
