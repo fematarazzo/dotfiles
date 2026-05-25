@@ -1,0 +1,15 @@
+-- ~/.sqliterc
+-- decent defaults for the sqlite3 CLI
+
+.headers on
+.mode column
+.timer on
+.nullvalue [NULL]
+.changes on
+.bail off
+
+-- prompt
+.prompt "sqlite> " "    ...> "
+
+-- per-database history would be ideal, but sqlite3 doesn't support it
+-- one global history file

@@ -51,6 +51,10 @@ cd ~/.dotfiles && stow */
 | `curl/`     | retries + patient timeouts                  |
 | `wget/`     | same idea                                   |
 | `cinnamon/` | dconf dump for Cinnamon (HiDPI friendly)    |
+| `psql/`     | `.psqlrc` (Postgres CLI defaults)           |
+| `sqlite/`   | `.sqliterc` (SQLite CLI defaults)           |
+| `pgcli/`    | pgcli config (better Postgres CLI)          |
+| `python/`   | python REPL startup (`PYTHONSTARTUP`)       |
 | `scripts/`  | `~/bin` with personal utilities             |
 
 ## personal scripts (`scripts/bin/`)

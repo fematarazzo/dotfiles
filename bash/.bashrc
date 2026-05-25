@@ -41,6 +41,9 @@ export VISUAL=nvim
 export PAGER=less
 export LESS='-R --use-color -j.5'
 
+# python REPL startup
+export PYTHONSTARTUP="$HOME/.config/python/pythonrc.py"
+
 # ── locale ─────────────────────────────────────────────
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8

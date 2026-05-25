@@ -1,0 +1,40 @@
+[main]
+
+# decent defaults for daily use
+smart_completion = True
+syntax_style = default
+prompt = '\u@\h:\d> '
+prompt_dsn = '\u@\h:\d> '
+log_file = ~/.cache/pgcli/log
+log_level = WARNING
+audit_log = ''
+multi_line = False
+on_error = STOP                     # stop a multi-statement on first error
+asterisk_column_order = table_order
+qualified_columns = False
+search_path_filter = False
+generate_aliases = False
+expand = auto                        # auto-expand wide rows
+auto_expand = True
+vi = False                           # use emacs-style keys (default readline)
+timing = True
+row_limit = 1000
+table_format = psql
+less_chatty = True
+keyword_casing = upper
+casing_file = ~/.config/pgcli/casing
+history_file = ~/.cache/pgcli/history
+destructive_warning = all            # warn on DROP / TRUNCATE / DELETE w/o WHERE
+destructive_warning_restarts_connection = False
+
+[named queries]
+
+# named queries — call with \nq <name>
+tables = SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') ORDER BY 1, 2;
+sizes  = SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname || '.' || tablename)) AS size FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') ORDER BY pg_total_relation_size(schemaname || '.' || tablename) DESC LIMIT 20;
+running = SELECT pid, age(clock_timestamp(), query_start) AS duration, usename, query FROM pg_stat_activity WHERE state != 'idle' AND query NOT ILIKE '%pg_stat_activity%' ORDER BY duration DESC;
+
+[alias_dsn]
+
+# put your connection strings here, never commit secrets
+# example = postgresql://user:pass@host:5432/db
