@@ -1,0 +1,26 @@
+# ~/.inputrc — readline
+# small things that save hours over the years
+
+# incremental history search with arrow keys
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# case-insensitive completion
+set completion-ignore-case on
+
+# show options on first tab (not the second)
+set show-all-if-ambiguous on
+
+# no bell on ambiguous
+set bell-style none
+
+# expand stuff like $HOME on tab
+set expand-tilde on
+
+# show file types in completion (/ after dirs, etc)
+set visible-stats on
+set colored-stats on
+
+# skip "Display all 4032 possibilities?"
+set completion-query-items 200
+set page-completions off
