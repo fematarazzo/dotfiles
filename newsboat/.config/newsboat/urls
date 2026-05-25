@@ -1,0 +1,26 @@
+# feeds I read. tagged by topic.
+
+# ── tech, the calm kind ────────────────────────────────
+https://lwn.net/headlines/rss                                "~LWN"                    tech
+https://www.debian.org/News/news                             "~Debian News"            tech debian
+https://lists.debian.org/debian-devel-announce/feed.rss      "~Debian devel"           tech debian
+https://drewdevault.com/blog/index.xml                       "~Drew DeVault"           blog tech
+https://danluu.com/atom.xml                                  "~Dan Luu"                blog tech
+https://jvns.ca/atom.xml                                     "~Julia Evans"            blog tech
+https://www.bitecode.dev/feed                                "~Bite Code"              blog python
+https://fasterthanli.me/index.xml                            "~fasterthanli.me"        blog tech
+
+# ── languages ──────────────────────────────────────────
+https://blog.golang.org/feed.atom                            "~The Go Blog"            tech golang
+https://blog.rust-lang.org/feed.xml                          "~Rust Blog"              tech rust
+https://ziglang.org/devlog/index.xml                         "~Zig devlog"             tech zig
+
+# ── infra / sre ────────────────────────────────────────
+https://www.usenix.org/publications/loginonline/feed         "~;login: online"         sre
+https://increment.com/feed.xml                               "~Increment"              sre
+https://sre.google/blog/feed.xml                             "~Google SRE"             sre
+
+# ── reading / slow web ─────────────────────────────────
+https://kottke.org/index.xml                                 "~kottke.org"             reading
+https://craigmod.com/index.xml                               "~Craig Mod"              reading
+https://aworkinglibrary.com/feed/                            "~A Working Library"      reading
