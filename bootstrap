@@ -46,3 +46,7 @@ echo "done."
 if [ "$moved" -eq 1 ]; then
     echo "originals saved to: ${BACKUP_DIR}"
 fi
+echo
+echo "next steps (not handled by stow):"
+echo "  Firefox  : ~/bin/firefox-apply   (links user.js into profile)"
+echo "  Cinnamon : ~/bin/cinnamon-apply  (loads dconf settings)"

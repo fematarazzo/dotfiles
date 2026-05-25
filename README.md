@@ -60,6 +60,18 @@ cd ~/.dotfiles && stow */
 - `dotfiles-sync` — commit + push if anything changed
 - `backup-daily` — borg local + Hetzner Storage Box
 - `cinnamon-apply` — applies `cinnamon/dconf-settings.ini` (with auto backup)
+- `firefox-apply` — links `firefox/user.js` into the active Firefox profile
+
+## packages that need extra steps after `./bootstrap`
+
+`stow` only symlinks files that live directly under `~`. A few packages
+live elsewhere on the system and need a separate apply step:
+
+| package    | how to apply                                       |
+|------------|----------------------------------------------------|
+| `firefox/` | `~/bin/firefox-apply` (links user.js into profile) |
+| `cinnamon/`| `~/bin/cinnamon-apply` (runs `dconf load`)         |
+| `searxng/` | reference only — server-side, deploy by hand       |
 
 ## what's **not** in here
 

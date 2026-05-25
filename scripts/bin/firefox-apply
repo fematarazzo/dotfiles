@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# firefox-apply — link user.js into the active Firefox profile.
+# safe to re-run. existing user.js is backed up first.
+
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+USERJS="${DOTFILES}/firefox/user.js"
+
+if [ ! -f "$USERJS" ]; then
+    echo "couldn't find $USERJS"
+    exit 1
+fi
+
+# find Firefox dir (covers regular install and ESR)
+for candidate in "$HOME/.mozilla/firefox" "$HOME/snap/firefox/common/.mozilla/firefox"; do
+    if [ -d "$candidate" ]; then
+        FF_DIR="$candidate"
+        break
+    fi
+done
+
+if [ -z "${FF_DIR:-}" ]; then
+    echo "no Firefox profile yet. start Firefox once, then re-run."
+    exit 1
+fi
+
+PROFILES_INI="$FF_DIR/profiles.ini"
+if [ ! -f "$PROFILES_INI" ]; then
+    echo "no profiles.ini at $PROFILES_INI"
+    exit 1
+fi
+
+# get the default profile path from the [Install*] section
+default_path=$(awk -F= '
+    /^\[Install/ { in_install=1; next }
+    /^\[/ { in_install=0 }
+    in_install && /^Default=/ { print $2; exit }
+' "$PROFILES_INI")
+
+# fallback: any [Profile*] section with Default=1
+if [ -z "$default_path" ]; then
+    default_path=$(awk -F= '
+        /^\[Profile/ { in_p=1; def=0; path=""; next }
+        /^\[/ {
+            if (in_p && def==1 && path!="") { print path; exit }
+            in_p=0
+        }
+        in_p && /^Default=1/ { def=1 }
+        in_p && /^Path=/ { path=$2 }
+        END { if (in_p && def==1 && path!="") print path }
+    ' "$PROFILES_INI")
+fi
+
+if [ -z "$default_path" ]; then
+    echo "could not detect default profile. available:"
+    find "$FF_DIR" -maxdepth 1 -type d -name '*.default*' -printf '  %f\n'
+    exit 1
+fi
+
+PROFILE_DIR="$FF_DIR/$default_path"
+if [ ! -d "$PROFILE_DIR" ]; then
+    echo "profile dir not found: $PROFILE_DIR"
+    exit 1
+fi
+
+# back up existing real user.js, if any
+TARGET="$PROFILE_DIR/user.js"
+if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+    backup="${TARGET}.backup.$(date +%Y%m%d-%H%M%S)"
+    mv "$TARGET" "$backup"
+    echo "  backed up existing user.js -> $backup"
+fi
+
+# symlink so future updates take effect on next Firefox restart
+ln -sfn "$USERJS" "$TARGET"
+echo "linked: $TARGET -> $USERJS"
+echo "restart Firefox to apply."
