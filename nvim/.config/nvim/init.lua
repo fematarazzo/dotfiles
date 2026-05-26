@@ -42,8 +42,20 @@ map("n", "<leader>h", ":nohlsearch<CR>", { desc = "clear highlight" })
 -- file explorer (netrw — ships with nvim, no plugin needed)
 map("n", "<leader>e", ":Explore<CR>", { desc = "explore" })
 
--- previous buffer
-map("n", "<leader><leader>", "<C-^>", { desc = "alt buffer" })
+-- jump to last used named buffer (skips [No Name] and empty buffers)
+local function alt_named_buffer()
+    local bufs = vim.fn.getbufinfo({ buflisted = 1 })
+    table.sort(bufs, function(a, b) return a.lastused > b.lastused end)
+    local current = vim.api.nvim_get_current_buf()
+    for _, buf in ipairs(bufs) do
+        if buf.bufnr ~= current and buf.name ~= "" then
+            vim.cmd("buffer " .. buf.bufnr)
+            return
+        end
+    end
+    vim.notify("no other named buffer", vim.log.levels.INFO)
+end
+map("n", "<leader><leader>", alt_named_buffer, { desc = "last used buffer" })
 
 -- window navigation
 map("n", "<C-h>", "<C-w>h")
@@ -71,22 +83,79 @@ vim.opt.runtimepath:append("~/.config/nvim/vendor/vim-fugitive")
 vim.opt.runtimepath:append("~/.config/nvim/vendor/vim-commentary")
 vim.opt.runtimepath:append("~/.config/nvim/vendor/vim-surround")
 
--- ── LSP (only Go and Python — my daily bread) ──────────
--- gopls and pyright installed via system/pip
-local function start_lsp(name, cmd, root_markers)
+-- ── LSP (one entry per language) ───────────────────────
+-- install servers via apt / pipx / npm / cargo — see nvim/README.md
+local function start_lsp(opts)
     vim.api.nvim_create_autocmd("FileType", {
-        pattern = name == "gopls" and "go" or "python",
+        pattern = opts.ft,
         callback = function()
-            local root = vim.fs.dirname(vim.fs.find(root_markers, { upward = true })[1])
-            if root then
-                vim.lsp.start({ name = name, cmd = cmd, root_dir = root })
-            end
+            if vim.fn.executable(opts.cmd[1]) == 0 then return end
+            local found = vim.fs.find(opts.root or { ".git" }, { upward = true })
+            local root = found[1] and vim.fs.dirname(found[1]) or vim.fn.getcwd()
+            vim.lsp.start({
+                name = opts.name,
+                cmd = opts.cmd,
+                root_dir = root,
+                settings = opts.settings,
+            })
         end,
     })
 end
 
-start_lsp("gopls", { "gopls" }, { "go.mod", ".git" })
-start_lsp("pyright", { "pyright-langserver", "--stdio" }, { "pyproject.toml", "setup.py", ".git" })
+-- the daily bread
+start_lsp({ name = "gopls", ft = "go", cmd = { "gopls" },
+           root = { "go.mod", ".git" } })
+
+start_lsp({ name = "pyright", ft = "python",
+           cmd = { "pyright-langserver", "--stdio" },
+           root = { "pyproject.toml", "setup.py", ".git" } })
+
+-- platform / infra languages
+start_lsp({ name = "yamlls", ft = { "yaml", "yaml.ansible", "yaml.docker-compose" },
+           cmd = { "yaml-language-server", "--stdio" },
+           settings = {
+               yaml = {
+                   keyOrdering = false,
+                   format = { enable = true },
+                   schemas = {
+                       ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
+                       ["https://json.schemastore.org/github-action.json"]   = ".github/actions/*",
+                       ["https://json.schemastore.org/ansible-playbook.json"] = { "playbook*.yml", "*-playbook.yml" },
+                       ["https://json.schemastore.org/kustomization.json"]    = "kustomization.{yml,yaml}",
+                       ["https://json.schemastore.org/docker-compose.json"]   = "docker-compose*.{yml,yaml}",
+                       ["kubernetes"]                                         = "k8s/**/*.{yml,yaml}",
+                   },
+               },
+           } })
+
+start_lsp({ name = "bashls", ft = { "sh", "bash" },
+           cmd = { "bash-language-server", "start" } })
+
+start_lsp({ name = "taplo", ft = "toml",
+           cmd = { "taplo", "lsp", "stdio" } })
+
+start_lsp({ name = "jsonls", ft = { "json", "jsonc" },
+           cmd = { "vscode-json-language-server", "--stdio" } })
+
+start_lsp({ name = "terraformls", ft = { "terraform", "tf", "terraform-vars" },
+           cmd = { "terraform-ls", "serve" },
+           root = { ".terraform", ".git" } })
+
+start_lsp({ name = "dockerls", ft = "dockerfile",
+           cmd = { "docker-langserver", "--stdio" } })
+
+start_lsp({ name = "marksman", ft = "markdown",
+           cmd = { "marksman", "server" } })
+
+start_lsp({ name = "lua_ls", ft = "lua",
+           cmd = { "lua-language-server" },
+           settings = {
+               Lua = {
+                   diagnostics = { globals = { "vim" } },
+                   workspace = { checkThirdParty = false },
+                   telemetry = { enable = false },
+               },
+           } })
 
 -- LSP keymaps
 vim.api.nvim_create_autocmd("LspAttach", {
